@@ -10,14 +10,17 @@ function init() {
         'scripts/configs.js',
         'scripts/states.js',
         'scripts/render.js',
-    ], function(logger, configs, states, render) {
+        'scripts/player.js',
+        'scripts/controls.js',
+    ], function(logger, configs, states, render, player, controls) {
         const canvasDom = document.querySelector("canvas");
         const ctx = canvasDom.getContext("2d");
 
         // setup
         logger.all();
         logger.log('configs:', configs);
-        render.setupCtx(ctx, configs);
+        render.init(ctx, configs);
+        controls.init();
 
         // listeners
         window.onresize = configs.updateSize;
@@ -27,21 +30,24 @@ function init() {
 
         // game loop
         setInterval(function() {
-            tick(states, configs, logger);
-            draw(render, configs);
+            tick(states, logger, controls, player);
+            draw(render, configs, player);
         }, 1000/configs.fps);
     });
 }
 
-function tick(states, logger) {
+function tick(states, logger, controls, player) {
     for (let module of arguments) {
         if (module.tick) module.tick();
     }
+    player.move(controls.getQueue());
+    controls.resetQueue();
     if (states.hasStateChanged()) {
         logger.log(states.getStateName());
     }
 }
 
-function draw(render, configs) {
+function draw(render, configs, player) {
     render.resize(configs.canvasSize);
+    render.draw(player.getGlobalPos());
 }

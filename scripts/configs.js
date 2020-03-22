@@ -1,13 +1,12 @@
 define(function(){
     let canvasSize = {
-        width: 640,
-        height: 480
+        width: window.innerWidth,
+        height: window.innerHeight
     };
     return {
-        fps: 10,
+        fps: 20,
         canvasSize: canvasSize,
         updateSize() {
-            console.log('asdf');
             canvasSize.width = window.innerWidth;
             canvasSize.height = window.innerHeight;
         }

@@ -1,67 +1,52 @@
 define(function() {
     let ctx;
-    let grid;
-    let piece;
-    let gameSize;
+    let background = {
+        pos: { x: 0, y: 0},
+        size: { w: 8000, h: 6000},
+        path: 'img/background.jpg',
+        img: new Image()
+    };
+    background.img.src = background.path;
+
+    function transformImage(img, offsetPos, pos, size) {
+        let zoomed = {x: offsetPos.x / offsetPos.z, y: offsetPos.y / offsetPos.z};
+        let viewCenter = {x: ctx.canvas.width/2, y: ctx.canvas.height/2};
+
+        let newW = Math.floor(size.w / offsetPos.z);
+        let newH = Math.floor(size.h / offsetPos.z);
+        // console.log('camera:', newX, newY, newW, newH)
+
+        // ctx.translate(-newX, -newY);
+        // ctx.rotate(offsetPos.a * Math.PI/180);
+        // ctx.translate(-newX, -newY);
+
+        // ctx.drawImage(img, newX, newY, newW, newH);
+        ctx.translate(viewCenter.x, viewCenter.y)
+        ctx.rotate(offsetPos.a * Math.PI/180);
+        ctx.drawImage(img, -zoomed.x, -zoomed.y, newW, newH);
+
+        ctx.rotate(0);
+        ctx.translate(-viewCenter.x, -viewCenter.y)
+        ctx.beginPath();
+        ctx.arc(viewCenter.x, viewCenter.y, 10, 0, 2 * Math.PI);
+        ctx.stroke();
+        // ctx.translate(newX, newY);
+    }
 
     return {
-        setupCtx: function(newCtx){
+        init: function(newCtx){
             ctx = newCtx;
         },
         resize: function(size) {
-            ctx.canvas.width = size.width;
-            ctx.canvas.height = size.height;
+            ctx.canvas.width = size.width - 10;
+            ctx.canvas.height = size.height - 10;
         },
-
         clear: function() {
             ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         },
-        animateReady: function() {
-            ctx.font = "20px Arial";
-            ctx.fillText(`Waiting for P2 to be ready`,
-                10, 50);
-        },
-        animateP2Pause: function() {
-            ctx.font = "20px Arial";
-            ctx.fillText(`P2 is paused`,
-                10, 50);
-        },
-        animateInit: function(timeline) {
-            ctx.font = "20px Arial";
-            ctx.fillText(`Starting In: ${timeline.initAnimation.length - timeline.getFrame()}`,
-                10, 50);
-        },
-        animateStart: function() {
-            ctx.font = "20px Arial";
-            ctx.fillText(`hi. press esc when you're ready`,
-                10, 50);
-        },
-        animatePause: function() {
-            ctx.font = "20px Arial";
-            ctx.fillText(`paused. press esc to resume`,
-                10, 50);
-        },
-        animateEnd: function(id) {
-            ctx.font = "20px Arial";
-            if (id === 7) {
-                ctx.fillText(`you win. press esc when you're ready.`,
-                    10, 50);
-                return;
-            }
-            ctx.fillText(`game over. press esc when you're ready.`,
-                10, 50);
-
-        },
-        drawBoard: function() {
-            // draw border
-            ctx.lineWidth = "1";
-            ctx.rect(0, 0, gameSize.width + .5, gameSize.height);
-            ctx.rect(500.5, 0, gameSize.width, gameSize.height);
-            ctx.stroke();
-
-            grid.render(ctx);
-            piece.render(ctx);
-            piece.renderQueue(ctx);
+        draw: function(offsetPos) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            transformImage(background.img, offsetPos, background.pos, background.size);
 
             // export board state
             // grid.setPartnerGrid(grid.getExportGrid(piece.getActivePiece()));

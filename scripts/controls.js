@@ -1,45 +1,57 @@
 define(function() {
+    let keyDown = {};
     let controlQueue = [];
 
-    function setupListeners(configs, rootDom) {
-        document.onkeydown = readControls;
-        // document.onkeyup = readControls;
+    function setupListeners() {
+        document.onkeydown = latchKeyDown;
+        document.onkeyup = latchKeyUp;
+        document.onwheel = scale;
     }
 
-    function readControls(e) {
-        let action = '';
-        switch(e.code) {
-            case 'KeyA':
-            case 'ArrowLeft':
-                action = 'LEFT';
-                break;
-            case 'KeyD':
-            case 'ArrowRight':
-                action = 'RIGHT';
-                break;
-            case 'KeyW':
-            case 'ArrowUp':
-                action = 'ROTATECW';
-                break;
-            case 'KeyS':
-            case 'ArrowDown':
-                action = 'DROP';
-                break;
-            case 'Space':
-                action = 'FASTDROP';
-                break;
-            case 'Escape':
-                action = 'PAUSE';
-                break;
+    function scale(e) {
+        let action;
+        if (e.deltaY < 0) {
+            action = 'ZOOMIN'
+        } else {
+            action = 'ZOOMOUT'
         }
         if (controlQueue.indexOf(action) > -1) return;
         controlQueue.push(action);
     }
 
+    function latchKeyDown(e) {
+        keyDown[e.code] = true;
+    }
+    function latchKeyUp(e) {
+        keyDown[e.code] = false;
+    }
+
+    function getQueue() {
+        let action = '';
+        if (keyDown['KeyA'] || keyDown['ArrowLeft']) {
+            controlQueue.push('LEFT');
+        }
+        if (keyDown['KeyD'] || keyDown['ArrowRight']) {
+            controlQueue.push('RIGHT');
+        }
+        if (keyDown['KeyW'] || keyDown['ArrowUp']) {
+            controlQueue.push('UP');
+        }
+        if (keyDown['KeyS'] || keyDown['ArrowDown']) {
+            controlQueue.push('DOWN');
+        }
+        if (keyDown['KeyE']) {
+            controlQueue.push('ROTATECW');
+        }
+        if (keyDown['KeyQ']) {
+            controlQueue.push('ROTATECCW');
+        }
+        return controlQueue;
+    }
+
     return {
-        setupListeners: setupListeners,
-        getQueue: function() {return controlQueue},
-        requestPause: function() {return controlQueue.includes('PAUSE')},
+        init: setupListeners,
+        getQueue: function() {return getQueue()},
         resetQueue: function() {controlQueue = []}
     }
 });
