@@ -1,7 +1,9 @@
 # Bananaz
 
 Weekend sprint to build bananagrams to play with friends.
+
 ![lobby](https://github.com/safetyscissors/bananas/blob/master/home.jpg)
+
 ![gameplay](https://github.com/safetyscissors/bananas/blob/master/playing.jpg)
 
 ## This is
