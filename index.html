@@ -1,6 +1,276 @@
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Lobster|Roboto&display=swap" rel="stylesheet">
+
+    <title>bananas</title>
+    <style>
+        body {
+            padding:0; margin:0;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        .important {
+            font-family: 'Lobster', cursive;
+            font-size: 60pt;
+        }
+        .normal {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16pt;
+        }
+        .wrapper {
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+        }
+        #lobbyWrapper {
+            z-index: 2;
+            visibility: visible;
+        }
+        .lobbyCard {
+            position:absolute;
+            margin: 10vh 10vw;
+            width: 80vw;
+            height: 80vh;
+            opacity: 0;
+            flex-direction: column;
+        }
+        #splash {
+            display:flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .animated {
+            animation-duration: .4s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+            visibility: hidden;
+        }
+        .fadeOut {
+            animation-name: fadeOut;
+        }
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+            }
+            100% {
+                opacity: 0;
+                visibility:hidden;
+                display: none;
+            }
+        }
+        .fadeOutUp {
+            animation-name: fadeOutUp;
+        }
+        @keyframes fadeOutUp {
+            0% {
+                opacity: 1;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+        }
+        .fadeIn {
+            visibility: visible;
+            display: block;
+            animation-name: fadeIn;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+        .fadeInUp {
+            visibility: visible;
+            animation-name: fadeInUp;
+        }
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(-20px);
+            }
+        }
+
+        .room {
+            position:absolute;
+            z-index:1;
+        }
+        .roomlabel {
+            position:absolute;
+            bottom:10px;
+            left:0;
+            padding-left:10px;
+            z-index:2;
+            background-color:white;
+        }
+        .roomWrapper{
+            position: relative;
+            display: inline-block;
+            width:300px;
+            height:220px;
+            border-radius: 5px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Pre-render the bigger shadow, but hide it */
+        .roomWrapper::after {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .roomWrapper:hover {
+            transform: scale(1.1, 1.1);
+        }
+
+        /* Transition to showing the bigger shadow on hover */
+        .roomWrapper:hover::after {
+            opacity: 1;
+        }
+
+        .armWrapper {
+            margin-top: 10vh;
+            display: flex;
+            flex-direction: row;
+            align-items: flex-end;
+            flex-wrap: nowrap;
+            bottom:0;
+        }
+        .arm {
+            transition: transform .3s ease-out;
+            transform: translate(0, 1000px);
+        }
+        .arm.turnOn {
+            transform: translate(0, 0px);
+        }
+        .arm:hover {
+            transform: translate(0, -20px);
+        }
+        .hidden {
+            visibility:hidden;
+        }
+
+        .menuItem {
+            padding: 10pt;
+            font-size:20pt;
+        }
+        .menuItem:hover {
+            padding: 8pt;
+            font-size:24pt;
+            cursor:pointer;
+        }
+
+        .menuList ul{
+            list-style-type:none;
+            font-family: 'Roboto', sans-serif;
+            font-size: 14pt;
+        }
+        .menuList li{
+            float:left;
+            padding:10px;
+        }
+    </style>
+</head>
+
 <body>
-    <canvas style="position:absolute;top:0;left:0;background:lightblue"></canvas>
+    <div id="lobbyWrapper" class="wrapper animated">
+        <div id="splash" class="lobbyCard animated">
+            <div class="important">Bananas</div>
+            <div id="roomsLink" class="normal menuItem">Rooms</div>
+            <div id="controlsLink"  class="normal menuItem">Controls</div>
+            <div id="rulesLink"  class="normal menuItem">Rules</div>
+        </div>
+        <div id="controlsCard" class="lobbyCard animated">
+            <div class="important">Controls</div>
+            <div id="controlsToMenuLink" class="normal menuItem">Menu</div>
+            <div class="menuList">
+                <ul>
+                    <li><br>W A S D keys or arrow keys to move<br><img src="img/wasd.gif"></li>
+                    <li><br>Scroll to zoom<br><img src="img/zoom.gif"></li>
+                    <li><br>Q or E keys to rotate<br><img src="img/rotate.gif"></li>
+                    <li>Click on a tile to select.<br> Click on an empty space to place.<br><img src="img/select_one.gif"></li>
+                    <li>1 and 2 keys arrange tiles <br>horizontally and vertically<br><img src="img/one_two.gif"></li>
+                    <li>Hold 1 or 2 and click to place<br> a group of tiles at once<br><img src="img/place_group.gif"></li>
+                </ul>
+            </div>
+        </div>
+        <div id="rulesCard" class="lobbyCard animated">
+            <div class="important">Rules</div>
+            <div id="rulesToMenuLink" class="normal menuItem">Menu</div>
+            <div class="menuList">
+                [needs graphics]<br><br>
+                <ul>
+                    <li>Start by finding an empty space to work in and can still reach to the center tiles</li>
+                    <li>Create words with your tiles.</li>
+                    <li>All words must be connected to each other in the scrabble format.</li>
+                    <li>When all your tiles are arranged, say "Peel" to the group.</li>
+                    <li>Everyone selects one tile from the middle and this repeats.</li>
+                    <li>When there is not enough tiles left in the middle, the next person to peel wins.</li>
+                </ul>
+            </div>
+        </div>
+        <div id="rooms" class="lobbyCard animated">
+            <div class="important">Rooms</div>
+            <div id="roomsToMenuLink" class="normal menuItem">Menu</div>
+            <div class="roomWrapper">
+                <img id="watermelon" class="room" width="100%" height="100%" alt="room" src="img/background.jpg" />
+                <div class="roomlabel normal">Watermelon</div>
+            </div>
+        </div>
+        <div id="armSelect" class="lobbyCard animated">
+            <div class="important">Pick an arm</div>
+            <div class="armWrapper">
+                <img id="id-1" class="arm" width="100" height="500" alt="player 1" src="img/arm.png" />
+                <img id="id-2" class="arm" width="100" height="500" alt="player 2" src="img/arm2.png" />
+                <img id="id-3" class="arm" width="100" height="500" alt="player 3" src="img/arm3.png" />
+                <img id="id-4" class="arm" width="100" height="500" alt="player 4" src="img/arm4.png" />
+                <img id="id-5" class="arm" width="100" height="500" alt="player 5" src="img/arm5.png" />
+                <img id="id-6" class="arm" width="100" height="500" alt="player 6" src="img/arm6.png" />
+                <img id="id-7" class="arm" width="100" height="500" alt="player 7" src="img/arm7.png" />
+                <img id="id-8" class="arm" width="100" height="500" alt="player 8" src="img/arm8.png" />
+                <img id="id-9" class="arm" width="100" height="500" alt="player 9" src="img/arm9.png" />
+                <img id="id-10" class="arm" width="100" height="500" alt="player 10" src="img/arm10.png" />
+            </div>
+        </div>
+        <canvas id="background"></canvas>
+    </div>
+    <div id="gameWrapper" class="wrapper animated">
+    <canvas id="game" class=""></canvas>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/1.0.0/anime.min.js"></script>
     <script src="https://js.pusher.com/5.0/pusher.min.js"></script>
+    <script src="lobby.js"></script>
     <script data-main="index" src="require.js"></script>
-    <button id="test" style="position:fixed;top:0;left:0" >test</button>
+
+    <div style="position:fixed;top:0;left:0">
+        zoom
+        <button id="zoom1">150%</button>
+        <button id="zoom2">100%</button>
+        <button id="zoom3">50%</button>
+        <div id="debug1">1</div>
+        <div id="debug2">2</div>
+        <div id="debug3">WASDQE to move, scroll to zoom, mouse to select and place, 1 and 2 to arrange tiles</div>
+        <button id="endGame" class="hidden">end game</button>
+    </div>
 </body>
+</html>

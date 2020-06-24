@@ -22,11 +22,12 @@ define(function() {
         tick() {},
         hasStateChanged() { if (stateChanged) {stateChanged = false; return true;}},
         idle() {updateState(STATES.IDLE)},
-        start() {updateState(STATES.INIT)},
+        init() {updateState(STATES.INIT)},
+        run() {updateState(STATES.RUNNING)},
         end() {updateState(STATES.END)},
         isIdle() {return state === STATES.IDLE},
         isInit() {return state === STATES.INIT},
-        isRunning() {return state === STATES.INIT || state === STATES.RUNNING},
+        isRunning() {return state === STATES.RUNNING},
         isEnd() {return state === STATES.END},
     }
 });
